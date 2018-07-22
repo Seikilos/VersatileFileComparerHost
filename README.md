@@ -7,6 +7,8 @@ The intention is to provide users with a way to implement a comparison method su
 
 Oh, it is also designed to be executed on servers and to work well in multi-core environments.
 
+The default package will contain some very basic comparer implementations to learn from or provide some out-of-the-box working experience.
+
 ## Exit codes
 * **0**: All went ok, no differences reported
 * **1**: There were differences found
