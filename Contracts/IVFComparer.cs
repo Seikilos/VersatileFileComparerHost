@@ -26,5 +26,15 @@ namespace Contracts
         /// <param name="file"></param>
         /// <returns></returns>
         bool WantsToHandle( string file );
+
+
+        /// <summary>
+        /// Called for both files to perform handling.
+        /// Assume that WantsToHandle has already ensured consistency, there is no need
+        /// to recheck whether it is valid to handle both files
+        /// </summary>
+        /// <param name="fileA">Path to first file</param>
+        /// <param name="fileB">Path to second file</param>
+        void Handle( string fileA, string fileB );
     }
 }

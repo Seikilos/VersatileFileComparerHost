@@ -22,6 +22,10 @@ namespace Tests
         {
             return true;
         }
+
+        public void Handle( string fileA, string fileB )
+        {
+        }
     }
 
 
