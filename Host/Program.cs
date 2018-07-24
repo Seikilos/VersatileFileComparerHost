@@ -61,10 +61,11 @@ namespace VersatileFileComparerHost
                 var foundFiles = new FileGatherer(io, options.DirectoryA, options.DirectoryB).CreateFilelist();
 
                 var correlator = new FileToComparerCorrelator(log);
-
                 var matchedFiles = correlator.MatchFilesToComparers(foundComparers, foundFiles);
               
                 log.Info("Processing files");
+
+                _processFiles(matchedFiles);
 
 
                 log.Info("Processing files finished");
@@ -81,6 +82,16 @@ namespace VersatileFileComparerHost
             if( log.HadErrors )
             {
                 Environment.ExitCode = 1;
+            }
+        }
+
+        private static void _processFiles(IEnumerable<Tuple<CompareEntry, List<IVFComparer>>> matchedFiles)
+        {
+            var tasks = new List<Task>();
+
+            foreach (var matchedFile in matchedFiles)
+            {
+               // tasks.Add(Task.Run(_executeTask));
             }
         }
 
