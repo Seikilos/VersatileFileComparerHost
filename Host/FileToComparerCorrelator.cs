@@ -66,23 +66,23 @@ namespace VersatileFileComparerHost
                 }
                 else
                 {
-                    // Various error conditions possible
-                    // Possible: Both are false => No comparer at all
+                    // Additional check for
                     // Possible: One is false => wrong gathering of files in a previous step
                     if(matchesA || matchesB)
                     {
                         // Will be true if one of them is true, so wrong gathering
-                        _logger.Error("Inconsistent result: Comparer {0} will match file '{1}' but not '{2}'", comparer.GetType().Name, file.PathA, file.PathB);
+                        _logger.Error("Inconsistent result: Comparer {0} will either match file '{1}' or '{2}' but not both", comparer.GetType().Name, file.PathA, file.PathB);
                     }
-                    else
-                    {
-                        // No match
-                    }
-                    
 
                 }
 
                 
+            }
+
+            // If list is empty, no comparer is suitable for this file, report
+            if (list.Any() == false)
+            {
+                _logger.Error("No comparer was found for files '{1}' and not '{2}'", file.PathA, file.PathB);
             }
 
             return list;

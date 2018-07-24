@@ -35,23 +35,28 @@ namespace Tests
             Assert.That(result, Has.Count.EqualTo(1), "One compare entry should yield one match");
         }
 
+        /// <summary>
+        /// Test should check for an error when onne does fully match and the other mock comparer only partially, which should not be possible
+        /// </summary>
         [Test]
         public void Test_One_Match_Other_Not()
         {
-            // TODO use two comparers here instead of one
             var log = Substitute.For< Contracts.ILogger >();
 
             var correlator = new FileToComparerCorrelator(log);
             var mockComparer = Substitute.For< IVFComparer >();
             mockComparer.WantsToHandle("a.txt").Returns(true); // handle only one file
+            var mockComparer2 = Substitute.For< IVFComparer >();
+            mockComparer2.WantsToHandle(Arg.Any<string>()).Returns(true);
             var compareEntry = new CompareEntry("foo","a.txt", "b.txt");
 
 
             // Act
-            var result = correlator.MatchFilesToComparers(new List< IVFComparer > {mockComparer}, new List< CompareEntry >(){compareEntry}).ToList();
+            var result = correlator.MatchFilesToComparers(new List< IVFComparer > {mockComparer, mockComparer2}, new List< CompareEntry >(){compareEntry}).ToList();
 
             // Assert
-            Assert.That(result, Has.Count.EqualTo(0), "No match in this situation but error");
+            Assert.That(result, Has.Count.EqualTo(1), "The valid one should be added to list");
+            Assert.That(result[0].Item2.First, Is.EqualTo(mockComparer2));
             log.Received().Error(Arg.Any<string>(), Arg.Any<object[]>());
         }
 
@@ -62,11 +67,12 @@ namespace Tests
 
             var correlator = new FileToComparerCorrelator(log);
             var mockComparer = Substitute.For< IVFComparer >(); // defaults to false for WantsToHandle
+            var mockComparer2 = Substitute.For< IVFComparer >(); // defaults to false for WantsToHandle
             
             var compareEntry = new CompareEntry("foo","a.txt", "b.txt");
 
             // Act
-            var result = correlator.MatchFilesToComparers(new List< IVFComparer > {mockComparer}, new List< CompareEntry >(){compareEntry}).ToList();
+            var result = correlator.MatchFilesToComparers(new List< IVFComparer > {mockComparer,mockComparer2}, new List< CompareEntry >(){compareEntry}).ToList();
 
             // Assert
             Assert.That(result, Has.Count.EqualTo(0), "No match in this situation but error");
