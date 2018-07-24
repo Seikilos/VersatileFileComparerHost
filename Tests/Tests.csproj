@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Test_FileGatherer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Test_FileToComparerCorrelator.cs" />
     <Compile Include="Test_PluginLoader.cs" />
     <Compile Include="Test_Utils.cs" />
   </ItemGroup>

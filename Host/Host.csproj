@@ -58,6 +58,9 @@
   <ItemGroup>
     <Compile Include="CompareEntry.cs" />
     <Compile Include="FileGatherer.cs" />
+    <Compile Include="FileToComparerCorrelator.cs" />
+    <Compile Include="Implementation\ConsoleLogger.cs" />
+    <Compile Include="Implementation\IO.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Program.cs" />
@@ -74,5 +77,6 @@
       <Name>Contracts</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

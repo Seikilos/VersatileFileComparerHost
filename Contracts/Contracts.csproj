@@ -41,6 +41,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="IIO.cs" />
+    <Compile Include="ILogger.cs" />
     <Compile Include="IVFComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
