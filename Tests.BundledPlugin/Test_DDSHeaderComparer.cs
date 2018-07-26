@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,17 @@ namespace Tests.BundledPlugin
     [TestFixture]
     class Test_DDSHeaderComparer
     {
+        public static string CreateFullPathToDDS(string filename)
+        {
+            var assembly = typeof(Test_DDSHeaderComparer).Assembly;
+            var uri = new Uri(assembly.CodeBase);
+            var localDirectory = Path.GetDirectoryName(uri.LocalPath);
+
+            var final = Path.Combine(localDirectory, "..", "..", "..", "TestData", "DDS", filename);
+            Assert.That(File.Exists(final), $"Path {final} must exist");
+            return final;
+        }
+
         [Test]
         public void Test_accept_DDS()
         {
@@ -19,5 +31,19 @@ namespace Tests.BundledPlugin
             Assert.That(new DDSHeaderComparer().WantsToHandle("foo.DDS"), Is.True, "Accepts all upper");
             Assert.That(new DDSHeaderComparer().WantsToHandle("foo.DdS"), Is.True, "Accepts mixed");
         }
+
+        [Test]
+        public void Test_DXT1_To_Itself_must_be_ok()
+        {
+            var fileA = CreateFullPathToDDS("sample_dxt1_no_mips.dds");
+            var fileB = CreateFullPathToDDS("sample_dxt1_no_mips.dds");
+
+            var dds = new DDSHeaderComparer();
+            dds.Init(null);
+
+            Assert.That(() => dds.Handle(fileA, fileB), Throws.Nothing, "Must not throw on same file");
+        }
+
+
     }
 }

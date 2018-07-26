@@ -26,7 +26,7 @@ namespace BundledPlugin
 
         public void Handle(string fileA, string fileB)
         {
-            throw new NotImplementedException();
+            
         }
     }
 }
