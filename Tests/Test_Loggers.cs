@@ -59,14 +59,14 @@ namespace Tests
             slogger.Info("{0}","Info");
             slogger.Warning("{0}","Warning");
             slogger.Error("{0}","Error");
-            slogger.Exception("Exception", new Exception("Text"));
+            slogger.Exception("Exception", new Exception("Text", new Exception("inner")));
 
             // Assert
             Assert.That(slogger.StringBuilderOutput.ToString(), Contains.Substring("Info"));
             Assert.That(slogger.StringBuilderOutput.ToString(), Contains.Substring("Warning"));
 
             Assert.That(slogger.StringBuilderError.ToString(), Contains.Substring("Error"));
-            Assert.That(slogger.StringBuilderError.ToString(), Contains.Substring("Exception").And.Contains("Text"));
+            Assert.That(slogger.StringBuilderError.ToString(), Contains.Substring("Exception").And.Contains("Text").And.Contains("inner"));
 
 
         }

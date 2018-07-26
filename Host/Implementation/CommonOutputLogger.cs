@@ -65,9 +65,8 @@ namespace VersatileFileComparerHost.Implementation
             {
                 sb.AppendLine( "with inner exception:" );
                 sb.AppendLine( e.ToString() );
-                e = innerException.InnerException;
+                e = e.InnerException;
             }
-
 
             log( LogType.EXCEPTION, sb.ToString() );
         }
