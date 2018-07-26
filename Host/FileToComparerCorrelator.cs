@@ -96,7 +96,7 @@ namespace VersatileFileComparerHost
             // If list is empty, no comparer is suitable for this file, report
             if (list.Any() == false)
             {
-                _logger.Error("No comparer was found for files '{1}' and not '{2}'", file.PathA, file.PathB);
+                _logger.Error("No comparer was found for files '{0}' and not '{1}'", file.PathA, file.PathB);
             }
 
             return list;
