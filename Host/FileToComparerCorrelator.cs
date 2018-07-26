@@ -55,6 +55,20 @@ namespace VersatileFileComparerHost
             var list = new List< IVFComparer >();
             foreach ( var comparer in comparers )
             {
+                // Exit early if one of the files is null
+                if (file.PathA == null || file.PathB == null)
+                {
+                    if (file.PathA == null)
+                    {
+                        _logger.Error("Inconsistent result for {0}: No file in first location found, only at second location '{1}'. Skipping", file.CommonName, file.PathB);
+                    }
+                    else
+                    {
+                        _logger.Error("Inconsistent result for {0}: No file in second location found, only at first location '{1}'. Skipping", file.CommonName, file.PathA);
+                    }
+
+                    continue;
+                }
 
                 var matchesA = comparer.WantsToHandle(file.PathA);
                 var matchesB = comparer.WantsToHandle(file.PathB);
