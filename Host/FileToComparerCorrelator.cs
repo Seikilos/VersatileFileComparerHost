@@ -47,7 +47,7 @@ namespace VersatileFileComparerHost
                 yield return Tuple.Create( file, list );
             }
 
-            _logger.Info( "Finished match" );
+            _logger.Info( "... done matching comparers to files" );
         }
 
         private List<IVFComparer> _correlateComparersForFile( CompareEntry file, List<IVFComparer> comparers )

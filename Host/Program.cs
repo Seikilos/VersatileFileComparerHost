@@ -43,36 +43,37 @@ namespace VersatileFileComparerHost
 
         private static void Execute(Options options)
         {
-            var log = new MultiThreadedCommonLogger();
+            var directLog = new ConsoleLogger();
+            var threadedLog = new MultiThreadedCommonLogger();
 
             try
             {
                 var io = new IO();
              
-                log.Info("Comparing directories");
-                log.Info("\t[A] {0}", options.DirectoryA);
-                log.Info("\t[B] {0}", options.DirectoryB);
+                directLog.Info("Comparing directories");
+                directLog.Info("\t[A] {0}", options.DirectoryA);
+                directLog.Info("\t[B] {0}", options.DirectoryB);
 
 
                 var foundComparers = _getComparers(io);
 
-                log.Info("Found {0} comparers: {1}", foundComparers.Count, string.Join(", ",foundComparers.Select(c => c.GetType().Name)) );
+                directLog.Info("Found {0} comparers: {1}", foundComparers.Count, string.Join(", ",foundComparers.Select(c => c.GetType().Name)) );
 
                 var foundFiles = new FileGatherer(io, options.DirectoryA, options.DirectoryB).CreateFilelist();
 
-                var correlator = new FileToComparerCorrelator(log);
+                var correlator = new FileToComparerCorrelator(threadedLog);
                 var matchedFiles = correlator.MatchFilesToComparers(foundComparers, foundFiles);
               
-                log.Info("Processing files");
+                directLog.Info("Processing files");
 
-                _processFiles(log, matchedFiles);
-
+                _processFiles(threadedLog, matchedFiles);
+                
                 // Finally always dump remaining logs
-                log.DumpAllLogs(_writeToOutput, _writeToError);
+                threadedLog.DumpAllLogs(_writeToOutput, _writeToError);
 
+                directLog.Info("Processing files finished");
 
-                log.Info("Processing files finished");
-
+              
 
             }
             catch (Exception ex) when (!System.Diagnostics.Debugger.IsAttached)
@@ -82,7 +83,7 @@ namespace VersatileFileComparerHost
             }
 
             // compare errors should not indicate serious (exit code 2)
-            if( log.HadErrors )
+            if( threadedLog.HadErrors )
             {
                 Environment.ExitCode = 1;
             }
@@ -104,7 +105,7 @@ namespace VersatileFileComparerHost
             foreach ( var matchedFile in matchedFiles )
             {
                 var mf = matchedFile;
-                tasks.Add( Task.Run( () => _executeTask( mf.Item1, mf.Item2 ) ).ContinueWith( (task) => _checkForErrors(logger, task)) );
+                tasks.Add( Task.Run( () => _executeTask(logger, mf.Item1, mf.Item2 ) ).ContinueWith( (task) => _checkForErrors(logger, task)) );
 
                 if (jobsRun + 1 == heartBeat)
                 {
@@ -139,12 +140,12 @@ namespace VersatileFileComparerHost
 
         private static void _writeToError( string obj )
         {
-            Console.Error.WriteLine(obj);
+            Console.Error.Write(obj);
         }
 
         private static void _writeToOutput( string obj )
         {
-            Console.WriteLine(obj);
+            Console.Write(obj);
         }
 
         private static void _checkForErrors( ILogger logger, Task task )
@@ -158,8 +159,10 @@ namespace VersatileFileComparerHost
 
 
 
-        private static void _executeTask( CompareEntry compareEntry, List< IVFComparer > comparers )
+        private static void _executeTask( ILogger logger, CompareEntry compareEntry, List< IVFComparer > comparers )
         {
+            logger.Info("Checking '{0}'", compareEntry.CommonName);
+
             foreach ( var vfComparer in comparers )
             {
                 vfComparer.Handle(compareEntry.PathA, compareEntry.PathB);
