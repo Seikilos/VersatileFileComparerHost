@@ -86,6 +86,7 @@ namespace VersatileFileComparerHost
             // compare errors should not indicate serious (exit code 2)
             if( threadedLog.HadErrors )
             {
+                directLog.Warning("There were errors. Examine the output for details");
                 Environment.ExitCode = 1;
             }
         }
