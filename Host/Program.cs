@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using CommandLine;
 using CommandLine.Text;
@@ -14,6 +15,8 @@ namespace VersatileFileComparerHost
 {
     class Program
     {
+        private static CountdownEvent _finishEvent;
+
         static void Main(string[] args)
         {
             var parser = new Parser();
@@ -86,7 +89,7 @@ namespace VersatileFileComparerHost
             // compare errors should not indicate serious (exit code 2)
             if( threadedLog.HadErrors )
             {
-                directLog.Warning("There were errors. Examine the output for details");
+                directLog.Warning("There were errors. Examine the output for details!");
                 Environment.ExitCode = 1;
             }
         }
@@ -100,27 +103,24 @@ namespace VersatileFileComparerHost
         {
             var tasks = new List<Task>();
 
-            const int heartBeat = 100; // Each 100 jobs a heart beat to log should be sent
+            _finishEvent = new CountdownEvent(1);
 
-            var jobsRun = 0;
-
+  
             foreach ( var matchedFile in matchedFiles )
             {
                 var mf = matchedFile;
                 tasks.Add( Task.Run( () => _executeTask(logger, mf.Item1, mf.Item2 ) ).ContinueWith( (task) => _checkForErrors(logger, task)) );
-
-                if (jobsRun + 1 == heartBeat)
-                {
-                    jobsRun = 0;
-                    // Queue a forced heart beat into the task queue to synchronize and dump logged data
-                    tasks.Add(Task.Run( () => _syncLogs(logger)));
-                }
-
-                ++jobsRun;
             }
 
-
+            // Finally spawn a standalone long running task
+            var syncTask = Task.Factory.StartNew(() => _syncLogs(logger),TaskCreationOptions.LongRunning);
+          
             Task.WaitAll( tasks.ToArray() );
+
+            // All processing tasks are completed, now signal the sync task to complete
+            _finishEvent.Signal();
+            syncTask.Wait();
+
         }
 
         /// <summary>
@@ -130,13 +130,19 @@ namespace VersatileFileComparerHost
         /// <param name="logger"></param>
         private static void _syncLogs( MultiThreadedCommonLogger logger )
         {
-            try
+            while (_finishEvent.IsSet == false)
             {
-                logger.DumpAllLogs(_writeToOutput, _writeToError);
-            }
-            catch ( Exception e )
-            {
-                logger.Exception("Syncing heartbeat failed with", e);
+                try
+                {
+                    logger.DumpAllLogs(_writeToOutput, _writeToError);
+                }
+                catch (Exception e)
+                {
+                    logger.Exception("Syncing dump failed failed with", e);
+                }
+
+                // Since it is supposed to be a separate long running thread, freeze it
+                Thread.Sleep(2000);
             }
         }
 
