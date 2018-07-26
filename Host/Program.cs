@@ -26,12 +26,19 @@ namespace VersatileFileComparerHost
                 {
                     var helpText = HelpText.AutoBuild(parserResult, h =>
                     {
+                        // to be more verbose, discover plugins to load
+                        var slog = new StringBuilderLogger();
+                        var foundComparers = _getComparers(new IO());
+                        _dumpComparers(foundComparers, slog);
+
                         // Configure HelpText here or create your own and return it 
                         h.AdditionalNewLineAfterOption = false;
                         return HelpText.DefaultParsingErrorsHandler(parserResult, h)
                             .AddPostOptionsLine("Exit code 0: finished without differences")
                             .AddPostOptionsLine("Exit code 1: found differences")
                             .AddPostOptionsLine("Exit code 2: Serious error or invalid arguments")
+                            .AddPostOptionsLine("")
+                            .AddPostOptionsLine(slog.StringBuilderOutput.ToString())
                             .AddPostOptionsLine("")
                             ;
                     }, e =>
@@ -59,8 +66,7 @@ namespace VersatileFileComparerHost
 
 
                 var foundComparers = _getComparers(io);
-
-                directLog.Info("Found {0} comparers: {1}", foundComparers.Count, string.Join(", ",foundComparers.Select(c => c.GetType().Name)) );
+                _dumpComparers(foundComparers, directLog);
 
                 var foundFiles = new FileGatherer(io, options.DirectoryA, options.DirectoryB).CreateFilelist();
 
@@ -97,6 +103,17 @@ namespace VersatileFileComparerHost
                 directLog.Info("Completed without errors.");
             }
 
+        }
+
+        private static void _dumpComparers(List<IVFComparer> foundComparers, ILogger log)
+        {
+            log.Info("Found {0} comparers:", foundComparers.Count);
+            foreach (var comparer in foundComparers)
+            {
+                var cType = comparer.GetType();
+                var assemblyName = cType.Assembly.FullName.Substring(0, cType.Assembly.FullName.IndexOf(",")); // Fetch the assembly name
+                log.Info("\tPlugin {0}, Type {1}\t \"{2}\"", assemblyName,cType.Name, comparer.Explanation );
+            }
         }
 
         /// <summary>

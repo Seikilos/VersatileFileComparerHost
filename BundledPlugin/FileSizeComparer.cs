@@ -14,6 +14,8 @@ namespace BundledPlugin
     {
         private IIO _io;
 
+        public string Explanation => "Compares files by checking their file sizes.";
+
         public void Init( IIO io )
         {
             _io = io;

@@ -12,6 +12,11 @@ namespace Contracts
     public interface IVFComparer
     {
         /// <summary>
+        /// Short string explaining the comparer
+        /// </summary>
+        string Explanation { get; }
+
+        /// <summary>
         /// Gets called once to initialize all dependencies available to the comparer
         /// </summary>
         /// <param name="io"></param>

@@ -14,6 +14,8 @@ namespace Tests
 {
     public class DummyComparer : IVFComparer
     {
+        public string Explanation => "";
+
         public void Init( IIO io )
         {
         }
