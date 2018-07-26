@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace BundledPlugin
     /// </summary>
     public class DDSHeaderComparer : IVFComparer
     {
-        public string Explanation => "TODO";
+        public string Explanation => "Compares DDS files by comparing their header";
 
         public void Init(IIO io)
         {
@@ -20,7 +21,7 @@ namespace BundledPlugin
 
         public bool WantsToHandle(string file)
         {
-            return false;
+            return Path.GetExtension(file).ToLower() == ".dds";
         }
 
         public void Handle(string fileA, string fileB)
