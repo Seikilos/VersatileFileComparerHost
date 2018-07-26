@@ -59,8 +59,11 @@
     <Compile Include="CompareEntry.cs" />
     <Compile Include="FileGatherer.cs" />
     <Compile Include="FileToComparerCorrelator.cs" />
+    <Compile Include="Implementation\CommonOutputLogger.cs" />
     <Compile Include="Implementation\ConsoleLogger.cs" />
     <Compile Include="Implementation\IO.cs" />
+    <Compile Include="Implementation\MultiThreadedCommonLogger.cs" />
+    <Compile Include="Implementation\StringBuilderLogger.cs" />
     <Compile Include="Options.cs" />
     <Compile Include="PluginLoader.cs" />
     <Compile Include="Program.cs" />

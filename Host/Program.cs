@@ -43,7 +43,7 @@ namespace VersatileFileComparerHost
 
         private static void Execute(Options options)
         {
-            var log = new ConsoleLogger();
+            var log = new MultiThreadedCommonLogger();
 
             try
             {
@@ -65,7 +65,10 @@ namespace VersatileFileComparerHost
               
                 log.Info("Processing files");
 
-                _processFiles(matchedFiles);
+                _processFiles(log, matchedFiles);
+
+                // Finally always dump remaining logs
+                log.DumpAllLogs(_writeToOutput, _writeToError);
 
 
                 log.Info("Processing files finished");
@@ -85,13 +88,81 @@ namespace VersatileFileComparerHost
             }
         }
 
-        private static void _processFiles(IEnumerable<Tuple<CompareEntry, List<IVFComparer>>> matchedFiles)
+        /// <summary>
+        /// Processes files in an async manner, avoids locking of IO or any other operations when executed in parallel
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="matchedFiles">An lazy evaluated list that performs IO to disk on demand</param>
+        private static void _processFiles(MultiThreadedCommonLogger logger, IEnumerable<Tuple<CompareEntry, List<IVFComparer>>> matchedFiles)
         {
             var tasks = new List<Task>();
 
-            foreach (var matchedFile in matchedFiles)
+            const int heartBeat = 100; // Each 100 jobs a heart beat to log should be sent
+
+            var jobsRun = 0;
+
+            foreach ( var matchedFile in matchedFiles )
             {
-               // tasks.Add(Task.Run(_executeTask));
+                var mf = matchedFile;
+                tasks.Add( Task.Run( () => _executeTask( mf.Item1, mf.Item2 ) ).ContinueWith( (task) => _checkForErrors(logger, task)) );
+
+                if (jobsRun + 1 == heartBeat)
+                {
+                    jobsRun = 0;
+                    // Queue a forced heart beat into the task queue to synchronize and dump logged data
+                    tasks.Add(Task.Run( () => _syncLogs(logger)));
+                }
+
+                ++jobsRun;
+            }
+
+
+            Task.WaitAll( tasks.ToArray() );
+        }
+
+        /// <summary>
+        /// Force a locked flush of all threads to report some progress to the console IO.
+        /// Otherwise it will be blank until the entire task queue has been completed
+        /// </summary>
+        /// <param name="logger"></param>
+        private static void _syncLogs( MultiThreadedCommonLogger logger )
+        {
+            try
+            {
+                logger.DumpAllLogs(_writeToOutput, _writeToError);
+            }
+            catch ( Exception e )
+            {
+                logger.Exception("Syncing heartbeat failed with", e);
+            }
+        }
+
+        private static void _writeToError( string obj )
+        {
+            Console.Error.WriteLine(obj);
+        }
+
+        private static void _writeToOutput( string obj )
+        {
+            Console.WriteLine(obj);
+        }
+
+        private static void _checkForErrors( ILogger logger, Task task )
+        {
+
+            if( task.IsFaulted)
+            {
+                logger.Exception("Task failed", task.Exception);
+            }
+        }
+
+
+
+        private static void _executeTask( CompareEntry compareEntry, List< IVFComparer > comparers )
+        {
+            foreach ( var vfComparer in comparers )
+            {
+                vfComparer.Handle(compareEntry.PathA, compareEntry.PathB);
             }
         }
 

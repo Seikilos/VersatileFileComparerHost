@@ -8,6 +8,8 @@ namespace Contracts
 {
     public interface ILogger
     {
+        bool HadErrors { get; }
+
         void Info( string msg, params object[] parameters );
 
         void Warning ( string msg, params object[] parameters );

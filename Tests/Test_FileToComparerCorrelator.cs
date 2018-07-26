@@ -36,7 +36,7 @@ namespace Tests
         }
 
         /// <summary>
-        /// Test should check for an error when onne does fully match and the other mock comparer only partially, which should not be possible
+        /// Test should check for an error when one does fully match and the other mock comparer only partially, which should not be possible
         /// </summary>
         [Test]
         public void Test_One_Match_Other_Not()
