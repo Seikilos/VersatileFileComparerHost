@@ -61,7 +61,8 @@ namespace VersatileFileComparerHost
 
                 var foundFiles = new FileGatherer(io, options.DirectoryA, options.DirectoryB).CreateFilelist();
 
-                var correlator = new FileToComparerCorrelator(threadedLog);
+                var correlator = new FileToComparerCorrelator(directLog); // Note: not thread safe log, assuming correlator is single threaded
+
                 var matchedFiles = correlator.MatchFilesToComparers(foundComparers, foundFiles);
               
                 directLog.Info("Processing files");
