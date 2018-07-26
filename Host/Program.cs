@@ -92,6 +92,11 @@ namespace VersatileFileComparerHost
                 directLog.Warning("There were errors. Examine the output for details!");
                 Environment.ExitCode = 1;
             }
+            else
+            {
+                directLog.Info("Completed without errors.");
+            }
+
         }
 
         /// <summary>

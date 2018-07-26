@@ -32,9 +32,15 @@ namespace VersatileFileComparerHost
         {
             _logger.Info( "Matching comparers to files" );
 
+            var count = 0;
 
             foreach ( var file in files )
             {
+                if ((++count) % 1000 == 0)
+                {
+                    _logger.Info("\tmatched {0} files", count);
+                }
+
                 var list = _correlateComparersForFile(file, comparers);
                 
                 // Design decision: Do not return an object if the list of matching comparers is empty
