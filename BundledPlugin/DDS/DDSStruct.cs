@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using BundledPlugin.DDS;
+﻿using System.Runtime.InteropServices;
 
-namespace BundledPlugin
+namespace BundledPlugin.DDS
 {
     /// <summary>
     /// The entire data structure for DDS
@@ -41,6 +35,16 @@ namespace BundledPlugin
             {
                 return ((DwMagic != null ? DwMagic.GetHashCode() : 0) * 397) ^ Header.GetHashCode();
             }
+        }
+
+        public static bool operator ==(DDSStruct left, DDSStruct right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(DDSStruct left, DDSStruct right)
+        {
+            return !left.Equals(right);
         }
     }
 }

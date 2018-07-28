@@ -111,7 +111,7 @@ namespace VersatileFileComparerHost
             foreach (var comparer in foundComparers)
             {
                 var cType = comparer.GetType();
-                var assemblyName = cType.Assembly.FullName.Substring(0, cType.Assembly.FullName.IndexOf(",")); // Fetch the assembly name
+                var assemblyName = cType.Assembly.FullName.Substring(0, cType.Assembly.FullName.IndexOf(",", StringComparison.Ordinal)); // Fetch the assembly name
                 log.Info("\tPlugin {0}, Type {1}\t \"{2}\"", assemblyName,cType.Name, comparer.Explanation );
             }
         }
@@ -209,6 +209,11 @@ namespace VersatileFileComparerHost
         {
 
             var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            if (assemblyDir == null)
+            {
+                throw new Exception($"Could not obtain assembly dir from string '{Assembly.GetExecutingAssembly().Location}'");
+            }
+
             var pluginDir = Path.Combine(assemblyDir, "plugins");
 
             var pluginLoader = new PluginLoader(io);

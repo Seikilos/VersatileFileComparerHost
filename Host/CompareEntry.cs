@@ -11,9 +11,9 @@ namespace VersatileFileComparerHost
     /// </summary>
     public class CompareEntry
     {
-        public string CommonName { get; private set; }
-        public string PathA { get; private set; }
-        public string PathB { get; private set; }
+        public string CommonName { get; }
+        public string PathA { get; }
+        public string PathB { get; }
 
         public CompareEntry(string commonName, string pathA, string pathB)
         {

@@ -14,9 +14,9 @@ namespace VersatileFileComparerHost
     public class PluginLoader
     {
 
-        private IIO _io;
+        private readonly IIO _io;
 
-        private List< Assembly > _assemblies = new List< Assembly >();
+        private readonly List< Assembly > _assemblies = new List< Assembly >();
 
         public PluginLoader( IIO io )
         {

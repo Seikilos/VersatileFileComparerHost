@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
+using BundledPlugin.DDS;
 using Contracts;
 
 namespace BundledPlugin
@@ -26,7 +27,7 @@ namespace BundledPlugin
 
         public bool WantsToHandle(string file)
         {
-            return Path.GetExtension(file).ToLower() == ".dds";
+            return Path.GetExtension(file)?.ToLower() == ".dds";
         }
 
         public void Handle(string fileA, string fileB)
@@ -61,14 +62,16 @@ namespace BundledPlugin
         {
             var fileAsStream = _io.ReadFile(file);
 
-            DDSStruct aStruct;
             int count = Marshal.SizeOf(typeof(DDSStruct));
             byte[] readBuffer = new byte[count];
-            BinaryReader reader = new BinaryReader(fileAsStream);
-            readBuffer = reader.ReadBytes(count);
+
+            using (var reader = new BinaryReader(fileAsStream))
+            {
+                readBuffer = reader.ReadBytes(count);
+            }
 
             GCHandle handle = GCHandle.Alloc(readBuffer, GCHandleType.Pinned);
-            aStruct = (DDSStruct)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(DDSStruct));
+            var aStruct = (DDSStruct)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(DDSStruct));
             handle.Free();
 
             return aStruct;

@@ -14,7 +14,7 @@ namespace VersatileFileComparerHost
     /// </summary>
     public class FileToComparerCorrelator
     {
-        private ILogger _logger;
+        private readonly ILogger _logger;
 
         public FileToComparerCorrelator( ILogger logger )
         {

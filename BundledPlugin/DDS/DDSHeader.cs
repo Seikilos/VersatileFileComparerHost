@@ -112,6 +112,16 @@ namespace BundledPlugin.DDS
                 return hashCode;
             }
         }
+
+        public static bool operator ==(DDSHeader left, DDSHeader right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(DDSHeader left, DDSHeader right)
+        {
+            return !left.Equals(right);
+        }
     }
 }
 
