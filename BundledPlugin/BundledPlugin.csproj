@@ -41,7 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DDSHeaderComparer.cs" />
-    <Compile Include="DDSStruct.cs" />
+    <Compile Include="DDS\DDSPixelFormat.cs" />
+    <Compile Include="DDS\DDSStruct.cs" />
+    <Compile Include="DDS\DDSHeader.cs" />
     <Compile Include="FileSizeComparer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

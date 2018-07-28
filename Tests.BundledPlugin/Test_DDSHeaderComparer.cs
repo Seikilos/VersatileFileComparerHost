@@ -53,6 +53,7 @@ namespace Tests.BundledPlugin
             var fileB = CreateFullPathToDDS("sample_dxt1_mips.dds");
             var mockIo = Substitute.For< IIO >();
             mockIo.ReadFile(fileA).Returns(new FileStream(fileA,FileMode.Open, FileAccess.Read,FileShare.ReadWrite));
+            mockIo.ReadFile(fileB).Returns(new FileStream(fileB,FileMode.Open, FileAccess.Read,FileShare.ReadWrite));
 
             var dds = new DDSHeaderComparer();
             dds.Init(mockIo);

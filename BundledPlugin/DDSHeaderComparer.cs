@@ -31,8 +31,35 @@ namespace BundledPlugin
 
         public void Handle(string fileA, string fileB)
         {
-            var fileAStream = _io.ReadFile(fileA);
+            var structA = ReadDDSStruct(fileA);
+            var structB = ReadDDSStruct(fileB);
 
+            if (structA.Equals(structB) == false)
+            {
+                // Try to resolve most common issues, otherwise dump the string representation
+                handleKnownDDSFields(ref structA, ref structB);
+
+                // If code reached this, fields are not specifically known, throw to string
+                throw new Exception($"DDS header{Environment.NewLine}{structA}{Environment.NewLine}is not equal to {Environment.NewLine}{structB}");
+            }
+        }
+
+        /// <summary>
+        /// Checks for the most common issues and provides an easier to read error message
+        /// </summary>
+        /// <param name="structA"></param>
+        /// <param name="structB"></param>
+        private void handleKnownDDSFields(ref DDSStruct structA, ref DDSStruct structB)
+        {
+            if (structA.Header.DwMipMapCount != structB.Header.DwMipMapCount)
+            {
+                throw new Exception($"Different count of mip maps found: {structA.Header.DwMipMapCount} not equal to {structB.Header.DwMipMapCount}");
+            }
+        }
+
+        public DDSStruct ReadDDSStruct(string file)
+        {
+            var fileAStream = _io.ReadFile(file);
 
             DDSStruct aStruct;
             int count = Marshal.SizeOf(typeof(DDSStruct));
@@ -41,10 +68,10 @@ namespace BundledPlugin
             readBuffer = reader.ReadBytes(count);
 
             GCHandle handle = GCHandle.Alloc(readBuffer, GCHandleType.Pinned);
-            aStruct = (DDSStruct) Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(DDSStruct));
+            aStruct = (DDSStruct)Marshal.PtrToStructure(handle.AddrOfPinnedObject(), typeof(DDSStruct));
             handle.Free();
 
-            int x = 0;
+            return aStruct;
         }
     }
 }
