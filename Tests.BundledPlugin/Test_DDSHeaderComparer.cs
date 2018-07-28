@@ -39,9 +39,13 @@ namespace Tests.BundledPlugin
         {
             var fileA = CreateFullPathToDDS("sample_dxt1_no_mips.dds");
             var fileB = CreateFullPathToDDS("sample_dxt1_no_mips.dds");
+            var mockIo = Substitute.For<IIO>();
+            // no file B needed, use callback to prevent the mock to cache the object, this would return the already used and not reset stream
+            mockIo.ReadFile(fileA).Returns(info => new FileStream(fileA, FileMode.Open, FileAccess.Read, FileShare.ReadWrite));
+            
 
             var dds = new DDSHeaderComparer();
-            dds.Init(null);
+            dds.Init(mockIo);
 
             Assert.That(() => dds.Handle(fileA, fileB), Throws.Nothing, "Must not throw on same file");
         }

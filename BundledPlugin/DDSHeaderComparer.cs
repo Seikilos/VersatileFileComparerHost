@@ -59,12 +59,12 @@ namespace BundledPlugin
 
         public DDSStruct ReadDDSStruct(string file)
         {
-            var fileAStream = _io.ReadFile(file);
+            var fileAsStream = _io.ReadFile(file);
 
             DDSStruct aStruct;
             int count = Marshal.SizeOf(typeof(DDSStruct));
             byte[] readBuffer = new byte[count];
-            BinaryReader reader = new BinaryReader(fileAStream);
+            BinaryReader reader = new BinaryReader(fileAsStream);
             readBuffer = reader.ReadBytes(count);
 
             GCHandle handle = GCHandle.Alloc(readBuffer, GCHandleType.Pinned);
