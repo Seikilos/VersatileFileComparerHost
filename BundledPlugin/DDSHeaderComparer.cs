@@ -52,6 +52,11 @@ namespace BundledPlugin
         /// <param name="structB"></param>
         private void handleKnownDDSFields(ref DDSStruct structA, ref DDSStruct structB)
         {
+            if (structA.Header.ddspf.dwFourCC != structB.Header.ddspf.dwFourCC)
+            {
+                throw new Exception($"Different formats found: {structA.Header.ddspf.dwFourCC} not equal to {structB.Header.ddspf.dwFourCC}");
+            }
+
             if (structA.Header.DwMipMapCount != structB.Header.DwMipMapCount)
             {
                 throw new Exception($"Different count of mip maps found: {structA.Header.DwMipMapCount} not equal to {structB.Header.DwMipMapCount}");

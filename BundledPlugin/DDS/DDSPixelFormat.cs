@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,7 +25,10 @@ namespace BundledPlugin.DDS
 
         public uint dwSize;
         public EPixelFlags dwFlags;
-        public uint dwFourCC;
+
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 5)]
+        public string dwFourCC;
+
         public uint dwRGBBitCount;
         public uint dwRBitMask;
         public uint dwGBitMask;
