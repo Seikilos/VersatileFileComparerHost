@@ -150,5 +150,22 @@ namespace Tests.BundledPlugin
 
             Assert.That(ex.Message.ToLower(), Does.Contain("dxt1").And.Contains("dxt5").And.Contains("mips"));
         }
+
+        [Test]
+        public void Test_L8_To_L16_And_Mips()
+        {
+            Assert.Fail("Unclear why 16f header has a broken FOURCC of 'o' ");
+            var fileA = CreateFullPathToDDS("sample_L8_no_mips.dds");
+            var fileB = CreateFullPathToDDS("sample_16f_mips_special_settings.dds");
+
+            var mockIo = CreateMock(fileA, fileB);
+
+            var dds = new DDSHeaderComparer();
+            dds.Init(mockIo);
+
+            var ex = Assert.Throws<Exception>(() => dds.Handle(fileA, fileB));
+
+            Assert.That(ex.Message.ToLower(), Does.Contain("dxt1").And.Contains("dxt5").And.Contains("mips"));
+        }
     }
 }
