@@ -75,8 +75,8 @@ namespace Tests.BundledPlugin
             var dds = new DDSHeaderComparer();
             dds.Init(mockIo);
 
-            Assert.That(() => dds.Handle(fileA, fileB),
-                Throws.Exception.With.Property(nameof(Exception.Message)).Contains("mip"),
+            var ex = Assert.Throws<Exception>(() => dds.Handle(fileA, fileB));
+            Assert.That(ex.Message.ToLower(), Does.Contain("mip"),
                 "The difference in the files is located in mips");
         }
 
@@ -97,5 +97,58 @@ namespace Tests.BundledPlugin
         }
 
 
+        [Test]
+        public void Test_L8_Mips_No_Mips()
+        {
+            var fileA = CreateFullPathToDDS("sample_L8_mips.dds");
+            var fileB = CreateFullPathToDDS("sample_L8_no_mips.dds");
+
+            var mockIo = CreateMock(fileA, fileB);
+
+            var dds = new DDSHeaderComparer();
+            dds.Init(mockIo);
+
+            var ex = Assert.Throws<Exception>(() => dds.Handle(fileA, fileB));
+
+
+            Assert.That(ex.Message.ToLower(), Does.Contain("mip"),
+                "The difference in the files is located in mips");
+        }
+
+        [Test]
+        public void Test_DXT1_To_L8()
+        {
+            var fileA = CreateFullPathToDDS("sample_DXT1_no_mips.dds");
+            var fileB = CreateFullPathToDDS("sample_L8_no_mips.dds");
+
+            var mockIo = CreateMock(fileA, fileB);
+
+            var dds = new DDSHeaderComparer();
+            dds.Init(mockIo);
+
+            var ex = Assert.Throws<Exception>(() => dds.Handle(fileA, fileB));
+
+            Assert.That(ex.Message.ToLower(), Does.Contain("luminance"));
+        }
+
+
+        /// <summary>
+        /// This test should ouptut both, different format and different mip level
+        /// </summary>
+        [Test]
+        public void Test_DXT1_Mips_To_DXT5_No_Mips()
+        {
+            var fileA = CreateFullPathToDDS("sample_dxt1_mips.dds");
+            var fileB = CreateFullPathToDDS("sample_dxt5_no_mips.dds");
+
+            var mockIo = CreateMock(fileA, fileB);
+
+            var dds = new DDSHeaderComparer();
+            dds.Init(mockIo);
+
+            var ex = Assert.Throws<Exception>(() => dds.Handle(fileA, fileB));
+
+            Assert.That(ex.Message.ToLower(), Does.Contain("dxt1").And.Contains("dxt5").And.Contains("mips"));
+        }
     }
 }

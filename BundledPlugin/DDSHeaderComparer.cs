@@ -52,14 +52,32 @@ namespace BundledPlugin
         /// <param name="structB"></param>
         private void handleKnownDDSFields(DDSStruct structA, DDSStruct structB)
         {
-            if (structA.Header.ddspf.dwFourCCString != structB.Header.ddspf.dwFourCCString)
+            var errors = new List<string>();
+           
+            // If any dw flag is four CC, try to be more precise
+            string formatA = structA.Header.ddspf.dwFlags == DDSPixelFormat.EPixelFlags.DDPF_FOURCC
+                ? structA.Header.ddspf.dwFourCCString
+                : structA.Header.ddspf.dwFlags.ToString();
+
+            string formatB = structB.Header.ddspf.dwFlags == DDSPixelFormat.EPixelFlags.DDPF_FOURCC
+                ? structB.Header.ddspf.dwFourCCString
+                : structB.Header.ddspf.dwFlags.ToString();
+
+            if (formatA != formatB)
             {
-                throw new Exception($"Different formats found: {structA.Header.ddspf.dwFourCCString} not equal to {structB.Header.ddspf.dwFourCCString}");
+                errors.Add($"Format different: {formatA} not equal to {formatB}");
             }
+
 
             if (structA.Header.DwMipMapCount != structB.Header.DwMipMapCount)
             {
-                throw new Exception($"Different count of mip maps found: {structA.Header.DwMipMapCount} not equal to {structB.Header.DwMipMapCount}");
+                errors.Add($"Mips different: {structA.Header.DwMipMapCount} not equal to {structB.Header.DwMipMapCount}");
+              
+            }
+
+            if (errors.Any())
+            {
+                throw new Exception($"Differences found:{Environment.NewLine}{string.Join(Environment.NewLine, errors)}");
             }
         }
 
