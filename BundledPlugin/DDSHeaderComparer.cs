@@ -38,7 +38,7 @@ namespace BundledPlugin
             if (structA.Equals(structB) == false)
             {
                 // Try to resolve most common issues, otherwise dump the string representation
-                handleKnownDDSFields(ref structA, ref structB);
+                handleKnownDDSFields(structA, structB);
 
                 // If code reached this, fields are not specifically known, throw to string
                 throw new Exception($"DDS header{Environment.NewLine}{structA}{Environment.NewLine}is not equal to {Environment.NewLine}{structB}");
@@ -50,11 +50,11 @@ namespace BundledPlugin
         /// </summary>
         /// <param name="structA"></param>
         /// <param name="structB"></param>
-        private void handleKnownDDSFields(ref DDSStruct structA, ref DDSStruct structB)
+        private void handleKnownDDSFields(DDSStruct structA, DDSStruct structB)
         {
-            if (structA.Header.ddspf.dwFourCC != structB.Header.ddspf.dwFourCC)
+            if (structA.Header.ddspf.dwFourCCString != structB.Header.ddspf.dwFourCCString)
             {
-                throw new Exception($"Different formats found: {structA.Header.ddspf.dwFourCC} not equal to {structB.Header.ddspf.dwFourCC}");
+                throw new Exception($"Different formats found: {structA.Header.ddspf.dwFourCCString} not equal to {structB.Header.ddspf.dwFourCCString}");
             }
 
             if (structA.Header.DwMipMapCount != structB.Header.DwMipMapCount)
@@ -65,6 +65,7 @@ namespace BundledPlugin
 
         public DDSStruct ReadDDSStruct(string file)
         {
+
             var fileAsStream = _io.ReadFile(file);
 
             int count = Marshal.SizeOf(typeof(DDSStruct));

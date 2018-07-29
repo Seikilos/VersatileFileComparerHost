@@ -1,26 +1,34 @@
-﻿using System.Runtime.InteropServices;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace BundledPlugin.DDS
 {
     /// <summary>
-    /// The entire data structure for DDS
+    /// The entire data structure for DDS. Actually a class to avoid copying int around in c#
     /// </summary>
-    public struct DDSStruct
+    [StructLayout(LayoutKind.Sequential, Size = 128,Pack = 1, CharSet = CharSet.Ansi)]
+    public class DDSStruct
     {
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 4)]
-        public string DwMagic;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
+        public byte[] DwMagic;
+        public string DwMagicString
+        {
+            get { return string.Join("", DwMagic.TakeWhile(c => c != 0).Select(Convert.ToChar)); }
+        }
+
 
         public DDSHeader Header;
 
 
         public override string ToString()
         {
-            return $"{nameof(DwMagic)}: {DwMagic}, {nameof(Header)}: {Header}";
+            return $"{nameof(DwMagic)}: {DwMagicString}, {nameof(Header)}: {Header}";
         }
 
         public bool Equals(DDSStruct other)
         {
-            return string.Equals(DwMagic, other.DwMagic) && Header.Equals(other.Header);
+            return string.Equals(DwMagicString, other.DwMagicString) && Header.Equals(other.Header);
         }
 
         public override bool Equals(object obj)

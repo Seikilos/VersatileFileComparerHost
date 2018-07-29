@@ -10,7 +10,8 @@ namespace BundledPlugin.DDS
     /// <summary>
     /// https://docs.microsoft.com/en-us/windows/desktop/direct3ddds/dds-header
     /// </summary>
-    public struct DDSHeader
+    [StructLayout(LayoutKind.Sequential, Size = 124, Pack = 1, CharSet = CharSet.Ansi)]
+    public class DDSHeader
     {
         [Flags]
         public enum EFlags
@@ -60,8 +61,8 @@ namespace BundledPlugin.DDS
         public uint DwMipMapCount;
 
         // 11 x 4 byte size of reserved data
-        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 11*4)]
-        public string DwReserved1;
+        [MarshalAs(UnmanagedType.ByValArray, SizeConst = 11*4)]
+        public byte[] DwReserved1;
 
         public DDSPixelFormat ddspf;
 
@@ -82,7 +83,7 @@ namespace BundledPlugin.DDS
 
         public bool Equals(DDSHeader other)
         {
-            return DwSize == other.DwSize && DwFlags == other.DwFlags && DwHeight == other.DwHeight && DwWidth == other.DwWidth && DwPitchOrLinearSize == other.DwPitchOrLinearSize && DwDepth == other.DwDepth && DwMipMapCount == other.DwMipMapCount && string.Equals(DwReserved1, other.DwReserved1) && ddspf.Equals(other.ddspf) && DwCaps == other.DwCaps && DwCaps2 == other.DwCaps2 && DwCaps3 == other.DwCaps3 && DwCaps4 == other.DwCaps4 && DwReserved2 == other.DwReserved2;
+            return DwSize == other.DwSize && DwFlags == other.DwFlags && DwHeight == other.DwHeight && DwWidth == other.DwWidth && DwPitchOrLinearSize == other.DwPitchOrLinearSize && DwDepth == other.DwDepth && DwMipMapCount == other.DwMipMapCount && DwReserved1.SequenceEqual(other.DwReserved1) && ddspf.Equals(other.ddspf) && DwCaps == other.DwCaps && DwCaps2 == other.DwCaps2 && DwCaps3 == other.DwCaps3 && DwCaps4 == other.DwCaps4 && DwReserved2 == other.DwReserved2;
         }
 
         public override bool Equals(object obj)
