@@ -56,13 +56,14 @@ namespace BundledPlugin
            
             // If any dw flag is four CC, try to be more precise
             string formatA = structA.Header.ddspf.dwFlags == DDSPixelFormat.EPixelFlags.DDPF_FOURCC
-                ? structA.Header.ddspf.dwFourCCString
+                ? structA.Header.ddspf.dwFourCCString.ToString()
                 : structA.Header.ddspf.dwFlags.ToString();
 
             string formatB = structB.Header.ddspf.dwFlags == DDSPixelFormat.EPixelFlags.DDPF_FOURCC
-                ? structB.Header.ddspf.dwFourCCString
+                ? structB.Header.ddspf.dwFourCCString.ToString()
                 : structB.Header.ddspf.dwFlags.ToString();
-
+                
+            
             if (formatA != formatB)
             {
                 errors.Add($"Format different: {formatA} not equal to {formatB}");
