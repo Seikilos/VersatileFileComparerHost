@@ -64,15 +64,15 @@ namespace BundledPlugin.DDS
             D3DFMT_V16U16 = 64,
             D3DFMT_A2W10V10U10 = 67,
 
-            D3DFMT_UYVY = 1431918169, // MAKEFOURCC('U', 'Y', 'V', 'Y'),
-            D3DFMT_R8G8_B8G8 = 1380401735, //MAKEFOURCC('R', 'G', 'B', 'G'),
-            D3DFMT_YUY2 = 1498765618, //MAKEFOURCC('Y', 'U', 'Y', '2'),
-            D3DFMT_G8R8_G8B8 = 1196574530, //MAKEFOURCC('G', 'R', 'G', 'B'),
-            D3DFMT_DXT1 = 1146639409, //MAKEFOURCC('D', 'X', 'T', '1'),
-            D3DFMT_DXT2 = 1146639410, //MAKEFOURCC('D', 'X', 'T', '2'),
-            D3DFMT_DXT3 = 1146639411, //MAKEFOURCC('D', 'X', 'T', '3'),
-            D3DFMT_DXT4 = 1146639412, //MAKEFOURCC('D', 'X', 'T', '4'),
-            D3DFMT_DXT5 = 1146639413, //MAKEFOURCC('D', 'X', 'T', '5'),
+            D3DFMT_UYVY = 1498831189,// MAKEFOURCC('U', 'Y', 'V', 'Y'),
+            D3DFMT_R8G8_B8G8 = 195525970, //MAKEFOURCC('R', 'G', 'B', 'G'),
+            D3DFMT_YUY2 = 844715353, //MAKEFOURCC('Y', 'U', 'Y', '2'),
+            D3DFMT_G8R8_G8B8 = 1111970375, //MAKEFOURCC('G', 'R', 'G', 'B'),
+            D3DFMT_DXT1 = 827611204, //MAKEFOURCC('D', 'X', 'T', '1'),
+            D3DFMT_DXT2 = 844388420, //MAKEFOURCC('D', 'X', 'T', '2'),
+            D3DFMT_DXT3 = 861165636, //MAKEFOURCC('D', 'X', 'T', '3'),
+            D3DFMT_DXT4 = 877942852, //MAKEFOURCC('D', 'X', 'T', '4'),
+            D3DFMT_DXT5 = 894720068, //MAKEFOURCC('D', 'X', 'T', '5'),
 
             D3DFMT_D16_LOCKABLE = 70,
             D3DFMT_D32 = 71,
@@ -98,7 +98,7 @@ namespace BundledPlugin.DDS
 
             D3DFMT_Q16W16V16U16 = 110,
 
-            D3DFMT_MULTI2_ARGB8 = 1296389169, // MAKEFOURCC('M','E','T','1'),
+            D3DFMT_MULTI2_ARGB8 = 827606349, // MAKEFOURCC('M','E','T','1'),
 
             D3DFMT_R16F = 111,
             D3DFMT_G16R16F = 112,
@@ -125,9 +125,15 @@ namespace BundledPlugin.DDS
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = 4)]
         public byte[] dwFourCC;
 
+        /// <summary>
+        /// Transform those byte to uint and then to D3DFormat
+        /// </summary>
         public D3DFormat dwFourCCString
         {
-            get { return (D3DFormat) BitConverter.ToUInt32(dwFourCC,0); }
+            get {
+                var res = BitConverter.ToUInt32(dwFourCC, 0);
+                return (D3DFormat)(res);
+            }
         }
         
 
